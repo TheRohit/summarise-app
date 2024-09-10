@@ -1,6 +1,9 @@
+import { transcribe } from "@/app/api/actions";
 import { SignOut } from "@/components/sign-out";
 import { getI18n } from "@/locales/server";
 import { getUser } from "@v1/supabase/queries";
+import { Button } from "@v1/ui/button";
+import Test from "./Test";
 
 export const metadata = {
   title: "Home",
@@ -14,7 +17,7 @@ export default async function Page() {
     <div className="h-screen w-screen flex flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center gap-4">
         <p>{t("welcome", { name: data?.user?.email })}</p>
-
+        <Test />
         <SignOut />
       </div>
     </div>

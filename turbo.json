@@ -18,7 +18,11 @@
         "OPENPANEL_SECRET_KEY",
         "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
-        "SENTRY_PROJECT"
+        "SENTRY_PROJECT",
+        "DEEPGRAM_API_KEY",
+        "COHERE_API_KEY",
+        "PINECONE_API_KEY",
+        "TRIGGER_SECRET_KEY"
       ],
       "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": ["^build"],
