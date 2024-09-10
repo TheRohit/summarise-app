@@ -1,5 +1,5 @@
 import { CohereEmbeddings } from "@langchain/cohere";
-import {
+import type {
   Pinecone,
   PineconeRecord,
   RecordMetadata,
@@ -32,7 +32,7 @@ export const createPineconeIndex = traceableFunction(
         },
       });
       console.log(
-        `Creating index.... please wait for it to finish initializing.`,
+        "Creating index.... please wait for it to finish initializing.",
       );
       await new Promise((resolve) => setTimeout(resolve, 60000)); // Wait for 1 minute
     } else {

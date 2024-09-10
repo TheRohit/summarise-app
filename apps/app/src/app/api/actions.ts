@@ -1,22 +1,24 @@
 "use server";
 
+import type { videoInfo } from "@distube/ytdl-core";
 import { tasks } from "@trigger.dev/sdk/v3";
-import { sequenceFlow } from '../../../../../packages/jobs/trigger/sequence';
-import { client as redis } from '../../../../../packages/kv/src';
-import { videoInfo } from "@distube/ytdl-core";
+import { sequenceFlow } from "../../../../../packages/jobs/trigger/sequence";
+import { client as redis } from "../../../../../packages/kv/src";
 import "server-only";
 interface CachedData {
   videoDetails: videoInfo;
-  chapters: {
-    title: string;
-    timestamp: string;
-    summary: string;
-  }[] | null;
+  chapters:
+    | {
+        title: string;
+        timestamp: string;
+        summary: string;
+      }[]
+    | null;
   pineconeTaskId: string;
 }
 
 export async function transcribe(id: string) {
-"use server"
+  "use server";
   try {
     const cachedData = await redis.get<CachedData>(id);
     if (cachedData) {
@@ -29,7 +31,9 @@ export async function transcribe(id: string) {
 
     const result = await tasks.triggerAndPoll<typeof sequenceFlow>(
       "sequence-flow",
-      { id: id },
+      {
+        id,
+      },
     );
 
     if (result.status === "COMPLETED") {
@@ -39,8 +43,6 @@ export async function transcribe(id: string) {
         status: "complete",
         cached: false,
       };
-    } else {
-      throw new Error("Transcription failed");
     }
   } catch (error) {
     console.error(error);

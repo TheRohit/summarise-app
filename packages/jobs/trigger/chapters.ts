@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { task } from "@trigger.dev/sdk/v3";
 import { createOpenAI } from "@ai-sdk/openai";
+import { task } from "@trigger.dev/sdk/v3";
 import { generateObject } from "ai";
+import { z } from "zod";
 
 const ChapterSchema = z.object({
   title: z.string(),

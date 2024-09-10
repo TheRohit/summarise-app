@@ -1,10 +1,13 @@
-import { task } from "@trigger.dev/sdk/v3";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { createPineconeIndex, updatePineconeWithTranscription } from '../../../apps/app/src/lib/rag-util';
+import { task } from "@trigger.dev/sdk/v3";
+import {
+  createPineconeIndex,
+  updatePineconeWithTranscription,
+} from "../../../apps/app/src/lib/rag-util";
 
 const client = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY!,
-  });
+  apiKey: process.env.PINECONE_API_KEY!,
+});
 export const createPineconeIndexTask = task({
   id: "pinecone-create-index",
   run: async (payload: { transcription: string; id: string }) => {
@@ -14,8 +17,7 @@ export const createPineconeIndexTask = task({
       client,
       "video-transcriptions",
       transcription,
-      id
+      id,
     );
   },
 });
-

@@ -4,7 +4,13 @@
     "enabled": true
   },
   "linter": {
-    "ignore": ["node_modules", ".next", "packages/tsconfig"],
+    "ignore": [
+      "node_modules",
+      ".next",
+      "packages/tsconfig",
+      "./packages/jobs/trigger",
+      "packages/jobs/.trigger"
+    ],
     "enabled": true,
     "rules": {
       "recommended": true,
@@ -12,7 +18,8 @@
         "noSvgWithoutTitle": "off"
       },
       "style": {
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "useImportType": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off"
