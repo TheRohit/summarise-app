@@ -3,10 +3,12 @@
 import { authActionClient } from "@/actions/safe-action";
 import type { videoInfo } from "@distube/ytdl-core";
 import { tasks } from "@trigger.dev/sdk/v3";
+
 import { z } from "zod";
 import { sequenceFlow } from "../../../../../packages/jobs/trigger/sequence";
 import { client as redis } from "../../../../../packages/kv/src";
 import "server-only";
+import { saveTranscription } from "@v1/supabase/mutations";
 
 interface CachedData {
   videoDetails: videoInfo;
@@ -29,7 +31,7 @@ export const transcribeAction = authActionClient
   .metadata({
     name: "transcribe",
   })
-  .action(async ({ parsedInput: { id } }) => {
+  .action(async ({ parsedInput: { id }, ctx: { user } }) => {
     try {
       const cachedData = await redis.get<CachedData>(id);
       if (cachedData) {
@@ -49,6 +51,13 @@ export const transcribeAction = authActionClient
 
       if (result.status === "COMPLETED") {
         await redis.set(id, result.output);
+        const title = result.output?.videoDetails?.title ?? "Untitled";
+
+        const error = await saveTranscription(id, user.id, title);
+        if (error) {
+          console.error("Error saving transcription:", error);
+        }
+
         return {
           ...result.output,
           status: "complete",

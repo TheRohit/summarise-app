@@ -10,6 +10,8 @@
     "generate": "supabase gen types --lang=typescript --local --schema public > ../../packages/supabase/src/types/db.ts"
   },
   "dependencies": {
-    "supabase": "^1.191.3"
+    "@types/uuid": "^10.0.0",
+    "supabase": "^1.191.3",
+    "uuid": "^10.0.0"
   }
 }
