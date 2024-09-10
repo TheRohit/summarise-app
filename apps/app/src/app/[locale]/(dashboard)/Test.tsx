@@ -1,6 +1,6 @@
 "use client";
 
-import { transcribe } from "@/app/api/actions";
+import { transcribeAction } from "@/actions/transcribe/transcribe";
 import { Button } from "@v1/ui/button";
 export const dynamic = "force-dynamic";
 const Test = () => {
@@ -8,7 +8,7 @@ const Test = () => {
     <div>
       <Button
         onClick={async () => {
-          const res = await transcribe("dzYP01CPC6E");
+          const res = await transcribeAction({ id: "dzYP01CPC6E" });
           console.log(res);
         }}
       >
