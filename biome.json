@@ -9,7 +9,8 @@
       ".next",
       "packages/tsconfig",
       "./packages/jobs/trigger",
-      "packages/jobs/.trigger"
+      "packages/jobs/.trigger",
+      "packages/supabase/src/types"
     ],
     "enabled": true,
     "rules": {
