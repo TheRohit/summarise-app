@@ -9,9 +9,10 @@ import { sequenceFlow } from "../../../../../packages/jobs/trigger/sequence";
 import { client as redis } from "../../../../../packages/kv/src";
 import "server-only";
 import { saveTranscription } from "@v1/supabase/mutations";
+import { VideoInfo } from "../../../../../packages/jobs/trigger/transcribe";
 
 interface CachedData {
-  videoDetails: videoInfo;
+  videoDetails: VideoInfo;
   chapters:
     | {
         title: string;

@@ -6,7 +6,7 @@ import { task } from "@trigger.dev/sdk/v3";
 
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
-interface VideoInfo {
+export interface VideoInfo {
   title: string;
   description: string;
   duration: string;

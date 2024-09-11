@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "sideEffects": false,
-  "files": ["tailwind.config.ts", "postcss.config.js", "globals.css"],
+  "files": [
+    "tailwind.config.ts",
+    "postcss.config.js",
+    "globals.css"
+  ],
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "biome check .",
@@ -23,14 +27,19 @@
     "./cn": "./src/utils/cn.ts",
     "./button": "./src/components/button.tsx",
     "./input": "./src/components/input.tsx",
+    "./skeleton": "./src/components/skeleton.tsx",
     "./tooltip": "./src/components/tooltip.tsx",
     "./dialog": "./src/components/dialog.tsx",
     "./icons": "./src/components/icons.tsx",
     "./tailwind.config": "./tailwind.config.ts",
-    "./postcss": "./postcss.config.js"
+    "./postcss": "./postcss.config.js",
+    "./badge": "./src/components/badge.tsx",
+    "./scroll-area": "./src/components/scroll-area.tsx",
+    "./card": "./src/components/card.tsx"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-scroll-area": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
     "class-variance-authority": "^0.7.0",
