@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.55.4",
+    "@tanstack/react-query-devtools": "^5.55.4",
     "@v1/analytics": "workspace:*",
     "@v1/kv": "workspace:*",
     "@v1/supabase": "workspace:*",

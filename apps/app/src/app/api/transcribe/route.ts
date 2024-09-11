@@ -1,6 +1,7 @@
 import { tasks } from "@trigger.dev/sdk/v3";
 import { client as redis } from "@v1/kv/client";
 import { saveTranscription } from "@v1/supabase/mutations";
+import { getUser } from "@v1/supabase/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { sequenceFlow } from "../../../../../../packages/jobs/trigger/sequence";
@@ -25,9 +26,9 @@ const transcribeSchema = z.object({
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
-  const user = req.headers.get("user");
+  const user = await getUser();
 
-  if (!id || !user) {
+  if (!id || !user.data.user) {
     return NextResponse.json({ error: "Missing id or user" }, { status: 400 });
   }
 
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
       await redis.set(id, result.output);
       const title = result.output?.videoDetails?.title ?? "Untitled";
 
-      const error = await saveTranscription(id, user, title);
+      const error = await saveTranscription(id, user?.data?.user?.id, title);
       if (error) {
         console.error("Error saving transcription:", error);
       }
