@@ -35,7 +35,8 @@
     "./postcss": "./postcss.config.js",
     "./badge": "./src/components/badge.tsx",
     "./scroll-area": "./src/components/scroll-area.tsx",
-    "./card": "./src/components/card.tsx"
+    "./card": "./src/components/card.tsx",
+    "./text-effect": "./src/components/text-effect.tsx"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",

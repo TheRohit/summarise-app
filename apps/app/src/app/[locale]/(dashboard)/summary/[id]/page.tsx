@@ -1,8 +1,11 @@
-import HydrationBoundary from "@/components/HydrationBoundary";
 import SummaryContent from "@/components/summary/SummaryContent";
 import { getSummary } from "@/lib/api";
-
-import { QueryClient } from "@tanstack/react-query";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import { Suspense } from "react";
 
 export default async function SummaryPage({
   params,
@@ -17,7 +20,7 @@ export default async function SummaryPage({
   });
 
   return (
-    <HydrationBoundary>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <SummaryContent id={params.id} />
     </HydrationBoundary>
   );

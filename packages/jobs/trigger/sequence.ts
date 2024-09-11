@@ -1,7 +1,15 @@
 import { logger, task, wait } from "@trigger.dev/sdk/v3";
 import { generateChaptersTrigger } from "./chapters";
 import { createPineconeIndexTask } from "./pinecone";
-import { transcribe } from "./transcribe";
+import { VideoInfo, transcribe } from "./transcribe";
+
+export interface SequenceFlowOutput {
+  videoDetails: VideoInfo;
+  chapters: {
+    chapters: { title: string; timestamp: string; summary: string }[];
+  };
+  pineconeTaskId: string;
+}
 export const sequenceFlow = task({
   id: "sequence-flow",
   run: async (payload: { id: string }, { ctx }) => {
