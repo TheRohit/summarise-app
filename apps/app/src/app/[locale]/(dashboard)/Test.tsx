@@ -1,6 +1,6 @@
 "use client";
 
-import { transcribeAction } from "@/actions/transcribe/transcribe";
+import { transcribeAction } from "@/app/api/transcribe/transcribe";
 import { Button } from "@v1/ui/button";
 export const dynamic = "force-dynamic";
 const Test = () => {
