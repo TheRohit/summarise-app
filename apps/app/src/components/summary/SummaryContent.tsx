@@ -3,6 +3,7 @@
 import { getSummary } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { SequenceFlowOutput } from "../../../../../packages/jobs/trigger/sequence";
+import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
 import { SummaryLoading } from "./summary.loading";
 
@@ -21,7 +22,7 @@ export default function SummaryContent({ id }: { id: string }) {
 
   return (
     <div className="flex h-full w-full justify-between gap-2">
-      {/* <ChatWindow videoId={id} /> */}
+      <ChatWindow videoId={id} />
       <InitialContent
         chapters={summary?.chapters}
         videoInfo={summary?.videoDetails}
