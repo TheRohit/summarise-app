@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@v1/ui/cn";
 import {
   Dialog,
   DialogContent,
@@ -11,9 +12,18 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-export function Header() {
+interface HeaderProps {
+  className?: string;
+}
+
+export function Header({ className }: HeaderProps) {
   return (
-    <header className="absolute top-0 w-full flex items-center justify-between p-4 z-10">
+    <header
+      className={cn(
+        "w-full flex items-center justify-between p-4 z-10 bg-background",
+        className
+      )}
+    >
       <span className="hidden md:block text-sm font-medium">v1.run</span>
 
       <Link href="/">
