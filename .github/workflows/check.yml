@@ -20,4 +20,4 @@ jobs:
       - name: 🚀 Deploy Trigger.dev
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-        run: bunx trigger.dev@beta deploy
+        run: bunx trigger.dev@beta deploy --config packages/jobs/trigger.config.ts
