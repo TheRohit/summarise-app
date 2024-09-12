@@ -44,32 +44,35 @@ export const transcribe = task({
   run: async (payload: { id: string }) => {
     const { id } = payload;
     const url = `https://www.youtube.com/watch?v=${id}`;
-
-    const cookies = JSON.parse(process.env.YOUTUBE_COOKIES || "{}");
-    const info = await ytdl.getInfo(url, { agent: ytdl.createAgent(cookies) });
-
-    const format = ytdl.chooseFormat(info.formats, {
-      quality: "lowestaudio",
-      filter: "audioonly",
-    });
-    if (!format) throw new Error("No suitable audio format found");
-
-    const audioPath = path.join(
-      "/tmp",
-      `audio_${Date.now()}.${format.container}`,
-    );
-
-    await new Promise<void>((resolve, reject) => {
-      ytdl
-        .downloadFromInfo(info, { format })
-        .pipe(fs.createWriteStream(audioPath))
-        .on("finish", resolve)
-        .on("error", reject);
-    });
-
-    const audioFileStream = fs.createReadStream(audioPath);
+    let audioPath: string | null = null;
+    let audioFileStream: fs.ReadStream | null = null;
 
     try {
+      const cookies = JSON.parse(process.env.YOUTUBE_COOKIES || "{}");
+      const info = await ytdl.getInfo(url, {
+        agent: ytdl.createAgent(cookies),
+      });
+
+      const format = ytdl.chooseFormat(info.formats, {
+        quality: "lowestaudio",
+        filter: "audioonly",
+      });
+      if (!format) {
+        return { error: "No suitable audio format found" };
+      }
+
+      audioPath = path.join("/tmp", `audio_${Date.now()}.${format.container}`);
+
+      await new Promise<void>((resolve, reject) => {
+        ytdl
+          .downloadFromInfo(info, { format })
+          .pipe(fs.createWriteStream(audioPath!))
+          .on("finish", resolve)
+          .on("error", reject);
+      });
+
+      audioFileStream = fs.createReadStream(audioPath);
+
       const { result } = await deepgram.listen.prerecorded.transcribeFile(
         audioFileStream,
         {
@@ -93,9 +96,16 @@ export const transcribe = task({
         transcription: formattedSubtitles,
         videoInfo,
       };
+    } catch (error) {
+      console.error("Error in transcribe task:", error);
+      return { error: "An error occurred during transcription" };
     } finally {
-      audioFileStream.close();
-      fs.unlinkSync(audioPath);
+      if (audioFileStream) {
+        audioFileStream.close();
+      }
+      if (audioPath && fs.existsSync(audioPath)) {
+        fs.unlinkSync(audioPath);
+      }
     }
   },
 });
