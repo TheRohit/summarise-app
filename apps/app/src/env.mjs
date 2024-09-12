@@ -19,6 +19,7 @@ export const env = createEnv({
     COHERE_API_KEY: z.string(),
     DEEPGRAM_API_KEY: z.string(),
     TRIGGER_SECRET_KEY: z.string(),
+    GROQ_API_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_OPENPANEL_CLIENT_ID: z.string(),
@@ -42,6 +43,7 @@ export const env = createEnv({
     COHERE_API_KEY: process.env.COHERE_API_KEY,
     DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY,
     TRIGGER_SECRET_KEY: process.env.TRIGGER_SECRET_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });

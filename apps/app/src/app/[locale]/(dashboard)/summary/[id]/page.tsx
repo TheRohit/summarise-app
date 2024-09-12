@@ -1,19 +1,27 @@
-import { SummaryLoading } from "@/components/summary/summary.loading";
-import { SummaryServer } from "@/components/summary/summary.server";
+import SummaryContent from "@/components/summary/SummaryContent";
+import { getSummary } from "@/lib/api";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
 import { Suspense } from "react";
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
+export default async function SummaryPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const queryClient = new QueryClient();
 
-export default async function Page({ params }: Props) {
-  const { id } = params;
+  await queryClient.prefetchQuery({
+    queryKey: ["summary", params.id],
+    queryFn: () => getSummary(params.id),
+  });
 
   return (
-    <Suspense fallback={<SummaryLoading />}>
-      <SummaryServer id={id} />
-    </Suspense>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <SummaryContent id={params.id} />
+    </HydrationBoundary>
   );
 }

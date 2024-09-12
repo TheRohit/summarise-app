@@ -1,16 +1,17 @@
 "use client";
 
+import { generateStream } from "@/actions/stream/generate-stream";
+import { Button } from "@v1/ui/button";
+import { cn } from "@v1/ui/cn";
+import { Input } from "@v1/ui/input";
+import { ScrollArea } from "@v1/ui/scroll-area";
+import { TextEffect } from "@v1/ui/text-effect";
 import { readStreamableValue } from "ai/rsc";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { generateStream } from "~/actions/generate-stream";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { TextEffect } from "~/components/ui/text-effect";
-import { cn } from "~/lib/utils";
+
 interface GenerationData {
   tldr: string;
   fullResponse: string;
@@ -99,7 +100,7 @@ const ChatWindow = ({ videoId }: { videoId: string }) => {
               "w-full rounded-lg ",
               isExpanded
                 ? "bg-neutral-200 dark:bg-neutral-800"
-                : "bg-transparent",
+                : "bg-transparent"
             )}
           >
             <AnimatePresence mode="wait">

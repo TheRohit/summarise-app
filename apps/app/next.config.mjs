@@ -4,6 +4,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ["@v1/supabase"],
+  images: {
+    remotePatterns: [{ hostname: "i.ytimg.com" }],
+  },
   experimental: {
     instrumentationHook: process.env.NODE_ENV === "production",
   },
