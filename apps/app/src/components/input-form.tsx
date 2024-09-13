@@ -16,9 +16,6 @@ import getYouTubeID from "get-youtube-id";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-export const dynamic = "force-dynamic";
-export const maxDuration = 30;
-
 export const InputForm = () => {
   const router = useRouter();
   const form = useForm<LinkRequest>({
