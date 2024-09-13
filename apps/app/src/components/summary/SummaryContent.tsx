@@ -4,7 +4,7 @@ import { transcribe } from "@/actions/transcribe/transcribe-action";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { SequenceFlowOutput } from "../../../../../packages/jobs/trigger/sequence";
 
-import Loading from "@/app/(dashboard)/summary/[id]/loading";
+import Loading from "@/app/[locale]/(dashboard)/summary/[id]/loading";
 import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
 export const revalidate = 0;
