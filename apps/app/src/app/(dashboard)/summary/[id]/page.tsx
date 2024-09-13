@@ -6,7 +6,7 @@ export const revalidate = 0;
 export default async function SummaryPage({
   params,
 }: {
-  params: { id: string; locale: string };
+  params: { id: string };
 }) {
   const queryClient = getQueryClient();
 
