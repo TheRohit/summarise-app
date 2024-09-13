@@ -1,31 +1,44 @@
 "use client";
 
-import { getSummary } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { transcribe } from "@/actions/transcribe/transcribe-action";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { SequenceFlowOutput } from "../../../../../packages/jobs/trigger/sequence";
+
+import Loading from "@/app/[locale]/(dashboard)/summary/[id]/loading";
 import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
-import { SummaryLoading } from "./summary.loading";
 
 export default function SummaryContent({ id }: { id: string }) {
   const {
     data: summary,
-    isPending,
+    isLoading,
     error,
-  } = useQuery<SequenceFlowOutput>({
+  } = useSuspenseQuery({
     queryKey: ["summary", id],
-    queryFn: () => getSummary(id),
+    queryFn: async () => {
+      const result = await transcribe(id);
+      if ("error" in result) {
+        throw new Error(result.error);
+      }
+      return result as SequenceFlowOutput;
+    },
   });
 
-  if (isPending) return <SummaryLoading />;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isLoading || !summary) return <Loading />;
+  if (error)
+    return (
+      <div>
+        Error:{" "}
+        {error instanceof Error ? error.message : "An unknown error occurred"}
+      </div>
+    );
 
   return (
     <div className="flex h-full w-full justify-between gap-2">
       <ChatWindow videoId={id} />
       <InitialContent
-        chapters={summary?.chapters}
-        videoInfo={summary?.videoDetails}
+        chapters={summary.chapters}
+        videoInfo={summary.videoDetails}
       />
     </div>
   );

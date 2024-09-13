@@ -114,6 +114,27 @@ export type Database = {
           },
         ];
       };
+      video_id_mappings: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          job_id: string;
+          video_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          job_id: string;
+          video_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          job_id?: string;
+          video_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;

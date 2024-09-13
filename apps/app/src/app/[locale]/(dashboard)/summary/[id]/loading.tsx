@@ -1,6 +1,6 @@
 import { Skeleton } from "@v1/ui/skeleton";
 
-export const SummaryLoading = () => {
+export default function Loading() {
   return (
     <div className=" flex h-full w-full justify-between gap-2">
       <div className="flex h-full w-[60%] flex-col gap-4 p-2">
@@ -26,4 +26,4 @@ export const SummaryLoading = () => {
       </div>
     </div>
   );
-};
+}

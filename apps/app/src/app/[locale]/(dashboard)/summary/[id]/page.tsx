@@ -1,22 +1,19 @@
+import { transcribe } from "@/actions/transcribe/transcribe-action";
+import { getQueryClient } from "@/app/get-query-client";
 import SummaryContent from "@/components/summary/SummaryContent";
-import { getSummary } from "@/lib/api";
-import {
-  HydrationBoundary,
-  QueryClient,
-  dehydrate,
-} from "@tanstack/react-query";
-import { Suspense } from "react";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 
 export default async function SummaryPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ["summary", params.id],
-    queryFn: () => getSummary(params.id),
+    queryFn: () => transcribe(params.id),
+    staleTime: Number.POSITIVE_INFINITY,
   });
 
   return (
