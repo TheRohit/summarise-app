@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { Readable } from "node:stream";
 import { createClient, srt } from "@deepgram/sdk";
 import ytdl, { thumbnail } from "@distube/ytdl-core";
 import { task } from "@trigger.dev/sdk/v3";
@@ -44,10 +45,11 @@ export const transcribe = task({
   run: async (payload: { id: string }) => {
     const { id } = payload;
     const url = `https://www.youtube.com/watch?v=${id}`;
-    let audioPath: string | null = null;
-    let audioFileStream: fs.ReadStream | null = null;
 
     try {
+      const { id } = payload;
+      const url = `https://www.youtube.com/watch?v=${id}`;
+
       const cookies = JSON.parse(process.env.YOUTUBE_COOKIES || "{}");
       const info = await ytdl.getInfo(url, {
         agent: ytdl.createAgent(cookies),
@@ -61,25 +63,21 @@ export const transcribe = task({
         return { error: "No suitable audio format found" };
       }
 
-      audioPath = path.join("/tmp", `audio_${Date.now()}.${format.container}`);
+      // Stream the audio data to Deepgram
+      const stream = ytdl(url, { format });
+      const { result, error } =
+        await deepgram.listen.prerecorded.transcribeFile(
+          stream as unknown as Buffer,
+          {
+            model: "nova-2",
+            smart_format: true,
+            mimetype: format.mimeType,
+          },
+        );
 
-      await new Promise<void>((resolve, reject) => {
-        ytdl
-          .downloadFromInfo(info, { format })
-          .pipe(fs.createWriteStream(audioPath!))
-          .on("finish", resolve)
-          .on("error", reject);
-      });
-
-      audioFileStream = fs.createReadStream(audioPath);
-
-      const { result } = await deepgram.listen.prerecorded.transcribeFile(
-        audioFileStream,
-        {
-          model: "nova-2",
-          smart_format: true,
-        },
-      );
+      if (error) {
+        throw new Error(`Transcription error: ${error}`);
+      }
 
       const videoInfo: VideoInfo = {
         title: info.videoDetails.title,
@@ -99,13 +97,6 @@ export const transcribe = task({
     } catch (error) {
       console.error("Error in transcribe task:", error);
       return { error: "An error occurred during transcription" };
-    } finally {
-      if (audioFileStream) {
-        audioFileStream.close();
-      }
-      if (audioPath && fs.existsSync(audioPath)) {
-        fs.unlinkSync(audioPath);
-      }
     }
   },
 });
