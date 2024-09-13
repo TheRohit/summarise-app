@@ -51,9 +51,9 @@ export async function GET(req: NextRequest) {
       },
     );
 
-    if (result.status === "COMPLETED") {
+    if (result.status === "COMPLETED" && result.output) {
       await redis.set(id, result.output);
-      const title = result.output?.videoDetails?.title ?? "Untitled";
+      const title = result?.output?.videoDetails?.title ?? "Untitled";
 
       const error = await saveTranscription(id, user?.data?.user?.id, title);
       if (error) {
@@ -69,15 +69,15 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       {
-        error: "Transcription not completed",
+        error: "Transcription not completed or result is empty",
       },
       { status: 400 },
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error in transcription process:", error);
     return NextResponse.json(
       {
-        error: "Something went wrong",
+        error: "Something went wrong during transcription",
       },
       { status: 500 },
     );
