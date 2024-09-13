@@ -13,7 +13,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    "src/lib/cookies/cookie-manager.js",
+    "src/lib/cookies/generate-yt-token.js"
   ],
   "exclude": ["node_modules"]
 }

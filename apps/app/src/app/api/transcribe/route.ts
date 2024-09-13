@@ -1,3 +1,4 @@
+import { videoInfo } from "@distube/ytdl-core";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { client as redis } from "@v1/kv/client";
 import { saveTranscription } from "@v1/supabase/mutations";
@@ -5,10 +6,9 @@ import { getUser } from "@v1/supabase/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { sequenceFlow } from "../../../../../../packages/jobs/trigger/sequence";
-import { VideoInfo } from "../../../../../../packages/jobs/trigger/transcribe";
 
 interface CachedData {
-  videoDetails: VideoInfo;
+  videoDetails: videoInfo;
   chapters:
     | {
         title: string;
@@ -51,9 +51,9 @@ export async function GET(req: NextRequest) {
       },
     );
 
-    if (result.status === "COMPLETED") {
+    if (result.status === "COMPLETED" && result.output) {
       await redis.set(id, result.output);
-      const title = result.output?.videoDetails?.title ?? "Untitled";
+      const title = result?.output?.videoDetails?.title ?? "Untitled";
 
       const error = await saveTranscription(id, user?.data?.user?.id, title);
       if (error) {
@@ -69,15 +69,15 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       {
-        error: "Transcription not completed",
+        error: "Transcription not completed or result is empty",
       },
       { status: 400 },
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error in transcription process:", error);
     return NextResponse.json(
       {
-        error: "Something went wrong",
+        error: "Something went wrong during transcription",
       },
       { status: 500 },
     );

@@ -1,102 +1,84 @@
-import fs from "node:fs";
-import path from "node:path";
-import { Readable } from "node:stream";
-import { createClient, srt } from "@deepgram/sdk";
-import ytdl, { thumbnail } from "@distube/ytdl-core";
+import {
+  DeepgramResponse,
+  SyncPrerecordedResponse,
+  createClient,
+  srt,
+} from "@deepgram/sdk";
 import { task } from "@trigger.dev/sdk/v3";
 
+import { cloneInnertube } from "../innertube/innertube";
+import { formatSRT } from "../innertube/util";
+
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
-
-export interface VideoInfo {
-  title: string;
-  description: string;
-  duration: string;
-  author: string;
-  viewCount: string;
-  thumbnails: thumbnail[];
-}
-
-function formatSRT(srt: string): string {
-  const lines = srt.split("\n");
-  let formatted = "";
-  let currentTime = "";
-  let isSubtitleText = false;
-
-  for (const line of lines) {
-    if (line.includes("-->")) {
-      currentTime = formatTime(line?.split(" --> ")[0] ?? "");
-      isSubtitleText = true;
-    } else if (line.trim() !== "" && isSubtitleText) {
-      formatted += `${currentTime} ${line}\n`;
-      isSubtitleText = false;
-    }
-  }
-
-  return formatted.trim();
-}
-
-function formatTime(time: string): string {
-  const [hours, minutes, seconds] = time.split(/[:,.]/);
-  return `${hours?.padStart(2, "0")}:${minutes?.padStart(2, "0")}:${seconds?.padStart(2, "0")}`;
-}
 
 export const transcribe = task({
   id: "transcribe-worker",
   run: async (payload: { id: string }) => {
     const { id } = payload;
-    const url = `https://www.youtube.com/watch?v=${id}`;
 
     try {
-      const { id } = payload;
-      const url = `https://www.youtube.com/watch?v=${id}`;
-
-      const cookies = JSON.parse(process.env.YOUTUBE_COOKIES || "{}");
-      const info = await ytdl.getInfo(url, {
-        agent: ytdl.createAgent(cookies),
+      const yt = await cloneInnertube();
+      const video = await yt.getInfo(id);
+      if (!video) {
+        return { error: "Video not found" };
+      }
+      const format = video.chooseFormat({
+        type: "audio",
       });
 
-      const format = ytdl.chooseFormat(info.formats, {
-        quality: "lowestaudio",
-        filter: "audioonly",
-      });
       if (!format) {
         return { error: "No suitable audio format found" };
       }
 
-      // Stream the audio data to Deepgram
-      const stream = ytdl(url, { format });
-      const { result, error } =
-        await deepgram.listen.prerecorded.transcribeFile(
+      const stream = await yt.download(id, {
+        type: "audio",
+      });
+
+      let transcriptionResult: DeepgramResponse<SyncPrerecordedResponse>;
+      try {
+        transcriptionResult = await deepgram.listen.prerecorded.transcribeFile(
           stream as unknown as Buffer,
           {
             model: "nova-2",
             smart_format: true,
-            mimetype: format.mimeType,
+            mimetype: format.mime_type,
           },
         );
-
-      if (error) {
-        throw new Error(`Transcription error: ${error}`);
+      } catch (deepgramError: unknown) {
+        console.error("Deepgram API error:", deepgramError);
+        return {
+          error: `Deepgram API error: ${(deepgramError as Error).message || "Unknown error"}`,
+        };
       }
 
-      const videoInfo: VideoInfo = {
-        title: info.videoDetails.title,
-        description: info.videoDetails.description || "",
-        duration: info.videoDetails.lengthSeconds,
-        author: info.videoDetails.author.name,
-        viewCount: info.videoDetails.viewCount,
-        thumbnails: info.videoDetails.thumbnails,
-      };
+      if (transcriptionResult.error) {
+        console.error("Transcription error:", transcriptionResult.error);
+        return { error: `Transcription error: ${transcriptionResult.error}` };
+      }
 
-      const subtitles = srt(result);
+      const subtitles = srt(transcriptionResult.result);
       const formattedSubtitles = formatSRT(subtitles);
       return {
         transcription: formattedSubtitles,
-        videoInfo,
+        videoInfo: {
+          title: video?.basic_info?.title ?? "",
+          description: video?.basic_info?.short_description ?? "",
+          duration: video?.basic_info?.duration?.toString() ?? "",
+          author: video?.basic_info?.author ?? "",
+          viewCount: video?.basic_info?.view_count?.toString() ?? "",
+          thumbnails:
+            video?.basic_info?.thumbnail?.map((thumb) => ({
+              url: thumb?.url,
+              width: thumb?.width,
+              height: thumb?.height,
+            })) ?? [],
+        },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error in transcribe task:", error);
-      return { error: "An error occurred during transcription" };
+      return {
+        error: `An error occurred during transcription: ${(error as Error).message || "Unknown error"}`,
+      };
     }
   },
 });
