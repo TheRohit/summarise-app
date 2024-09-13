@@ -1,13 +1,13 @@
 "use client";
 
 import { transcribe } from "@/actions/transcribe/transcribe-action";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { SequenceFlowOutput } from "../../../../../packages/jobs/trigger/sequence";
 
 import Loading from "@/app/[locale]/(dashboard)/summary/[id]/loading";
-import { Suspense } from "react";
 import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
+export const revalidate = 0;
 
 export default function SummaryContent({ id }: { id: string }) {
   const {
@@ -28,14 +28,12 @@ export default function SummaryContent({ id }: { id: string }) {
   if (isLoading || !summary) return <Loading />;
 
   return (
-    <Suspense fallback={<Loading />}>
-      <div className="flex h-full w-full justify-between gap-2">
-        <ChatWindow videoId={id} />
-        <InitialContent
-          chapters={summary.chapters}
-          videoInfo={summary.videoDetails}
-        />
-      </div>
-    </Suspense>
+    <div className="flex h-full w-full justify-between gap-2">
+      <ChatWindow videoId={id} />
+      <InitialContent
+        chapters={summary.chapters}
+        videoInfo={summary.videoDetails}
+      />
+    </div>
   );
 }

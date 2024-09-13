@@ -2,7 +2,7 @@ import { transcribe } from "@/actions/transcribe/transcribe-action";
 import { getQueryClient } from "@/app/get-query-client";
 import SummaryContent from "@/components/summary/SummaryContent";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
-
+export const revalidate = 0;
 export default async function SummaryPage({
   params,
 }: {
