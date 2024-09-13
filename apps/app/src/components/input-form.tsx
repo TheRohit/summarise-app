@@ -13,11 +13,11 @@ import {
 } from "@v1/ui/form";
 import { Input } from "@v1/ui/input";
 import getYouTubeID from "get-youtube-id";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export const InputForm = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const form = useForm<LinkRequest>({
     resolver: zodResolver(LinkValidator),
     defaultValues: {
@@ -28,7 +28,7 @@ export const InputForm = () => {
   const goToSummary = (data: LinkRequest) => {
     const url = data.url;
     const videoId = getYouTubeID(url);
-    router.push(`/summary/${videoId}`);
+    // router.push(`/summary/${videoId}`);
   };
 
   return (
