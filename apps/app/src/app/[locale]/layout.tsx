@@ -1,4 +1,5 @@
 import { Header } from "@/components/header";
+import { getStaticParams } from "@/locales/server";
 import { cn } from "@v1/ui/cn";
 import "@v1/ui/globals.css";
 import { GeistMono } from "geist/font/mono";
@@ -26,13 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Providers>
-        <body
-          className={cn(
-            `${GeistSans.variable} ${GeistMono.variable}`,
-            "antialiased"
-          )}
-        >
+      <body
+        className={cn(
+          `${GeistSans.variable} ${GeistMono.variable}`,
+          "antialiased"
+        )}
+      >
+        <Providers>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -44,8 +45,8 @@ export default function RootLayout({
               <main className="flex-grow overflow-auto p-4">{children}</main>
             </div>
           </ThemeProvider>
-        </body>
-      </Providers>
+        </Providers>
+      </body>
     </html>
   );
 }
