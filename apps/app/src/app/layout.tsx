@@ -1,12 +1,12 @@
 import { Header } from "@/components/header";
-import { getStaticParams } from "@/locales/server";
+
 import { cn } from "@v1/ui/cn";
 import "@v1/ui/globals.css";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import Providers from "../providers";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Create v1",
