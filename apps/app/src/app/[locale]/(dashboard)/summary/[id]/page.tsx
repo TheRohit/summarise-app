@@ -12,7 +12,7 @@ export default async function SummaryPage({
 
   await queryClient.prefetchQuery({
     queryKey: ["summary", params.id],
-    queryFn: () => transcribe(params.id),
+    queryFn: async () => await transcribe(params.id),
     staleTime: Number.POSITIVE_INFINITY,
   });
 
