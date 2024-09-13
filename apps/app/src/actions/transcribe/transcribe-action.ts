@@ -1,12 +1,13 @@
+"use server";
+
 import { tasks } from "@trigger.dev/sdk/v3";
 import { client as redis } from "@v1/kv/client";
 import { saveTranscription } from "@v1/supabase/mutations";
 import { getUser } from "@v1/supabase/queries";
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { sequenceFlow } from "../../../../../../packages/jobs/trigger/sequence";
-import { VideoInfo } from "../../../../../../packages/jobs/trigger/transcribe";
-
+import { sequenceFlow } from "../../../../../packages/jobs/trigger/sequence";
+import { VideoInfo } from "../../../../../packages/jobs/trigger/transcribe";
+import "server-only";
 interface CachedData {
   videoDetails: VideoInfo;
   chapters:
@@ -23,25 +24,23 @@ const transcribeSchema = z.object({
   id: z.string(),
 });
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
+export async function transcribe(id: string) {
+  "use server";
   const user = await getUser();
 
   if (!id || !user.data.user) {
-    return NextResponse.json({ error: "Missing id or user" }, { status: 400 });
+    return { status: "error", error: "Missing id or user" };
   }
 
   try {
-    transcribeSchema.parse({ id });
-
     const cachedData = await redis.get<CachedData>(id);
     if (cachedData) {
-      return NextResponse.json({
+      console.log("----- CACHED -----");
+      return {
         ...cachedData,
         status: "complete",
         cached: true,
-      });
+      };
     }
 
     const result = await tasks.triggerAndPoll<typeof sequenceFlow>(
@@ -53,6 +52,7 @@ export async function GET(req: NextRequest) {
 
     if (result.status === "COMPLETED" && result.output) {
       await redis.set(id, result.output);
+      console.log("----- SAVED -----");
       const title = result?.output?.videoDetails?.title ?? "Untitled";
 
       const error = await saveTranscription(id, user?.data?.user?.id, title);
@@ -60,26 +60,22 @@ export async function GET(req: NextRequest) {
         console.error("Error saving transcription:", error);
       }
 
-      return NextResponse.json({
+      return {
         ...result.output,
         status: "complete",
         cached: false,
-      });
+      };
     }
 
-    return NextResponse.json(
-      {
-        error: "Transcription not completed or result is empty",
-      },
-      { status: 400 },
-    );
+    return {
+      status: "error",
+      error: "Transcription not completed or result is empty",
+    };
   } catch (error) {
     console.error("Error in transcription process:", error);
-    return NextResponse.json(
-      {
-        error: "Something went wrong during transcription",
-      },
-      { status: 500 },
-    );
+    return {
+      status: "error",
+      error: "Something went wrong during transcription",
+    };
   }
 }

@@ -1,3 +1,4 @@
+import { InputForm } from "@/components/input-form";
 import { SignOut } from "@/components/sign-out";
 import { getI18n } from "@/locales/server";
 import { getUser } from "@v1/supabase/queries";
@@ -15,6 +16,7 @@ export default async function Page() {
       <div className="flex flex-col items-center justify-center gap-4">
         <p>{t("welcome", { name: data?.user?.email })}</p>
 
+        <InputForm />
         <SignOut />
       </div>
     </div>
