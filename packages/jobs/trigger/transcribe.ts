@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { Readable } from "node:stream";
 import { createClient, srt } from "@deepgram/sdk";
 import ytdl, { thumbnail } from "@distube/ytdl-core";
 import { task } from "@trigger.dev/sdk/v3";
@@ -45,38 +46,38 @@ export const transcribe = task({
     const { id } = payload;
     const url = `https://www.youtube.com/watch?v=${id}`;
 
-    const cookies = JSON.parse(process.env.YOUTUBE_COOKIES || "{}");
-    const info = await ytdl.getInfo(url, { agent: ytdl.createAgent(cookies) });
-
-    const format = ytdl.chooseFormat(info.formats, {
-      quality: "lowestaudio",
-      filter: "audioonly",
-    });
-    if (!format) throw new Error("No suitable audio format found");
-
-    const audioPath = path.join(
-      "/tmp",
-      `audio_${Date.now()}.${format.container}`,
-    );
-
-    await new Promise<void>((resolve, reject) => {
-      ytdl
-        .downloadFromInfo(info, { format })
-        .pipe(fs.createWriteStream(audioPath))
-        .on("finish", resolve)
-        .on("error", reject);
-    });
-
-    const audioFileStream = fs.createReadStream(audioPath);
-
     try {
-      const { result } = await deepgram.listen.prerecorded.transcribeFile(
-        audioFileStream,
-        {
-          model: "nova-2",
-          smart_format: true,
-        },
-      );
+      const { id } = payload;
+      const url = `https://www.youtube.com/watch?v=${id}`;
+
+      const cookies = JSON.parse(process.env.YOUTUBE_COOKIES || "{}");
+      const info = await ytdl.getInfo(url, {
+        agent: ytdl.createAgent(cookies),
+      });
+
+      const format = ytdl.chooseFormat(info.formats, {
+        quality: "lowestaudio",
+        filter: "audioonly",
+      });
+      if (!format) {
+        return { error: "No suitable audio format found" };
+      }
+
+      // Stream the audio data to Deepgram
+      const stream = ytdl(url, { format });
+      const { result, error } =
+        await deepgram.listen.prerecorded.transcribeFile(
+          stream as unknown as Buffer,
+          {
+            model: "nova-2",
+            smart_format: true,
+            mimetype: format.mimeType,
+          },
+        );
+
+      if (error) {
+        throw new Error(`Transcription error: ${error}`);
+      }
 
       const videoInfo: VideoInfo = {
         title: info.videoDetails.title,
@@ -93,9 +94,9 @@ export const transcribe = task({
         transcription: formattedSubtitles,
         videoInfo,
       };
-    } finally {
-      audioFileStream.close();
-      fs.unlinkSync(audioPath);
+    } catch (error) {
+      console.error("Error in transcribe task:", error);
+      return { error: "An error occurred during transcription" };
     }
   },
 });

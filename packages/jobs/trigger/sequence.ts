@@ -16,7 +16,7 @@ export const sequenceFlow = task({
     const { id } = payload;
 
     const transcription = await transcribe.triggerAndWait({ id });
-    if (transcription.ok) {
+    if (transcription.ok && transcription.output.transcription) {
       const videoDetails = transcription.output.videoInfo;
 
       const chapters = await generateChaptersTrigger.triggerAndWait({
