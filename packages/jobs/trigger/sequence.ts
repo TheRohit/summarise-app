@@ -1,4 +1,4 @@
-import { logger, task, wait } from "@trigger.dev/sdk/v3";
+import { task } from "@trigger.dev/sdk/v3";
 import { generateChaptersTrigger } from "./chapters";
 import { createPineconeIndexTask } from "./pinecone";
 import { VideoInfo, transcribe } from "./transcribe";

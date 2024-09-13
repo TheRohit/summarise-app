@@ -6,10 +6,20 @@ import {
 } from "@deepgram/sdk";
 import { task } from "@trigger.dev/sdk/v3";
 
+import { thumbnail } from "@distube/ytdl-core";
 import { cloneInnertube } from "../innertube/innertube";
 import { formatSRT } from "../innertube/util";
 
 const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
+
+export interface VideoInfo {
+  title: string;
+  description: string;
+  duration: string;
+  author: string;
+  viewCount: string;
+  thumbnails: thumbnail[];
+}
 
 export const transcribe = task({
   id: "transcribe-worker",

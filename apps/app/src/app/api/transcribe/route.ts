@@ -1,4 +1,3 @@
-import { videoInfo } from "@distube/ytdl-core";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { client as redis } from "@v1/kv/client";
 import { saveTranscription } from "@v1/supabase/mutations";
@@ -6,9 +5,10 @@ import { getUser } from "@v1/supabase/queries";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { sequenceFlow } from "../../../../../../packages/jobs/trigger/sequence";
+import { VideoInfo } from "../../../../../../packages/jobs/trigger/transcribe";
 
 interface CachedData {
-  videoDetails: videoInfo;
+  videoDetails: VideoInfo;
   chapters:
     | {
         title: string;

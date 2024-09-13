@@ -1,6 +1,5 @@
 "use client";
 
-import { videoInfo } from "@distube/ytdl-core";
 import { ChaptersResponse } from "../../../../../packages/jobs/trigger/chapters";
 import { VideoInfo } from "../../../../../packages/jobs/trigger/transcribe";
 import { Badge } from "../../../../../packages/ui/src/components/badge";
