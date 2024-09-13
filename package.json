@@ -22,7 +22,8 @@
     "lint:repo": "bunx sherif@latest",
     "lint:repo:fix": "bunx sherif@latest --fix",
     "typecheck": "turbo typecheck",
-    "generate:token": "bun packages/jobs/cookies/generate-yt-token.js"
+    "generate:token": "bun packages/jobs/cookies/generate-yt-token.js",
+    "prod:jobs": "bunx trigger.dev@beta deploy --config packages/jobs/trigger.config.ts --skip-typecheck"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
