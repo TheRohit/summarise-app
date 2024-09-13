@@ -25,27 +25,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          `${GeistSans.variable} ${GeistMono.variable}`,
-          "antialiased"
-        )}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={cn(
+            `${GeistSans.variable} ${GeistMono.variable}`,
+            "antialiased"
+          )}
         >
-          <Providers>
-            <div className="flex flex-col h-screen">
-              <Header className="flex-shrink-0" />
-              <main className="flex-grow overflow-auto p-4">{children}</main>
-            </div>
-          </Providers>
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Providers>
+              <div className="flex flex-col h-screen">
+                <Header className="flex-shrink-0" />
+                <main className="flex-grow overflow-auto p-4">{children}</main>
+              </div>
+            </Providers>
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   );
 }
