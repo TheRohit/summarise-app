@@ -6,10 +6,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
 
-const hostName =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3000"
-    : process.env.VERCEL_URL;
+const getHostName = () => {
+  if (process.env.NODE_ENV === "development") return "http://localhost:3000";
+  return `https://${
+    process.env.NEXT_PUBLIC_VERCEL_URL || process.env.VERCEL_URL
+  }`;
+};
 
 export default function SummaryContent({
   id,
@@ -26,9 +28,12 @@ export default function SummaryContent({
         videoId: id,
       });
 
-      const run = await fetch(`${hostName}/api/process?${params.toString()}`, {
-        method: "GET",
-      });
+      const run = await fetch(
+        `${getHostName()}/api/process?${params.toString()}`,
+        {
+          method: "GET",
+        }
+      );
       return run.json();
     },
     refetchInterval: (query) =>
