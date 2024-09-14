@@ -44,6 +44,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@langchain/cohere": "^0.2.2",
     "@pinecone-database/pinecone": "^3.0.2",
+    "@tanstack/react-query-next-experimental": "^5.56.2",
     "@types/set-cookie-parser": "^2.4.10",
     "@types/tough-cookie": "^4.0.5",
     "ai": "^3.3.30",

@@ -7,7 +7,6 @@ import { SequenceFlowOutput } from "../../../../../packages/jobs/trigger/sequenc
 import Loading from "@/app/[locale]/(dashboard)/summary/[id]/loading";
 import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
-export const revalidate = 0;
 
 export default function SummaryContent({ id }: { id: string }) {
   const {
