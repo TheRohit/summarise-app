@@ -1,24 +1,18 @@
-import { transcribe } from "@/actions/transcribe/transcribe-action";
-
 import SummaryContent from "@/components/summary/SummaryContent";
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 export default async function SummaryPage({
   params,
+  searchParams,
 }: {
-  params: { id: string; locale: string };
+  params: { id: string; jobId: string };
+  searchParams?: { jobId: string };
 }) {
-  // const queryClient = getQueryClient();
-
-  // await queryClient.prefetchQuery({
-  //   queryKey: ["summary", params.id],
-  //   queryFn: async () => await transcribe(params.id),
-  //   staleTime: Number.POSITIVE_INFINITY,
-  // });
-
   return (
-    // <HydrationBoundary state={dehydrate(queryClient)}>
-    <SummaryContent id={params.id} />
-    // </HydrationBoundary>
+    <Suspense fallback={<Loading />}>
+      <SummaryContent id={params.id} jobId={searchParams?.jobId} />
+    </Suspense>
   );
 }

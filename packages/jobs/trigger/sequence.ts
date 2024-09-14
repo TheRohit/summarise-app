@@ -1,6 +1,7 @@
 import { task } from "@trigger.dev/sdk/v3";
 import { generateChaptersTrigger } from "./chapters";
 import { createPineconeIndexTask } from "./pinecone";
+import { pushToRedis } from "./redis";
 import { VideoInfo, transcribe } from "./transcribe";
 
 export interface SequenceFlowOutput {
@@ -8,7 +9,6 @@ export interface SequenceFlowOutput {
   chapters: {
     chapters: { title: string; timestamp: string; summary: string }[];
   };
-  pineconeTaskId: string;
 }
 export const sequenceFlow = task({
   id: "sequence-flow",
@@ -23,15 +23,22 @@ export const sequenceFlow = task({
         input: transcription.output.transcription,
       });
 
-      const pineconeTask = await createPineconeIndexTask.trigger({
+      await pushToRedis.triggerAndWait({
+        videoId: id,
+        data: {
+          videoDetails,
+          chapters: chapters.ok ? chapters.output : { chapters: [] },
+        },
+      });
+
+      await createPineconeIndexTask.trigger({
         transcription: transcription.output.transcription,
         id,
       });
 
       return {
         videoDetails,
-        chapters: chapters.ok ? chapters.output : null,
-        pineconeTaskId: pineconeTask.id,
+        chapters: chapters.ok ? chapters.output : [],
       };
     }
   },

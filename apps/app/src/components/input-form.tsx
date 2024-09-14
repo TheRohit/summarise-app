@@ -1,5 +1,7 @@
 "use client";
 
+import { saveTranscriptionAction } from "@/actions/transcribe/save-transcription-action";
+import { transcribeAction } from "@/actions/transcribe/transcribe-action";
 import { LinkRequest, LinkValidator } from "@/lib/validators/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@v1/ui/button";
@@ -13,11 +15,14 @@ import {
 } from "@v1/ui/form";
 import { Input } from "@v1/ui/input";
 import getYouTubeID from "get-youtube-id";
-// import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export const InputForm = () => {
-  // const router = useRouter();
+  const router = useRouter();
+  const { executeAsync, result, isPending } = useAction(transcribeAction);
+
   const form = useForm<LinkRequest>({
     resolver: zodResolver(LinkValidator),
     defaultValues: {
@@ -25,10 +30,15 @@ export const InputForm = () => {
     },
   });
 
-  const goToSummary = (data: LinkRequest) => {
+  const goToSummary = async (data: LinkRequest) => {
     const url = data.url;
     const videoId = getYouTubeID(url);
-    // router.push(`/summary/${videoId}`);
+    if (!videoId) return;
+    await executeAsync({ id: videoId }).then((result) => {
+      if (result?.data?.result?.id) {
+        router.push(`/summary/${videoId}?jobId=${result?.data?.result?.id}`);
+      }
+    });
   };
 
   return (
@@ -56,7 +66,7 @@ export const InputForm = () => {
           />
           <Button
             variant={"ghost"}
-            disabled={form?.watch("url") === ""}
+            disabled={form?.watch("url") === "" || isPending}
             className={cn(
               "group rounded-full border border-black/5 bg-neutral-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-neutral-200 dark:border-white/5 dark:bg-neutral-900 dark:hover:bg-neutral-800",
               "flex-shrink-0"

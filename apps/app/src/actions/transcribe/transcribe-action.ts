@@ -1,13 +1,12 @@
 "use server";
 
+import { authActionClient } from "@/actions/safe-action";
 import { tasks } from "@trigger.dev/sdk/v3";
 import { client as redis } from "@v1/kv/client";
-import { saveTranscription } from "@v1/supabase/mutations";
-import { getUser } from "@v1/supabase/queries";
-import { z } from "zod";
-import { sequenceFlow } from "../../../../../packages/jobs/trigger/sequence";
-import { VideoInfo } from "../../../../../packages/jobs/trigger/transcribe";
 import "server-only";
+import { z } from "zod";
+import { VideoInfo } from "../../../../../packages/jobs/trigger/transcribe";
+
 interface CachedData {
   videoDetails: VideoInfo;
   chapters:
@@ -21,61 +20,36 @@ interface CachedData {
 }
 
 const transcribeSchema = z.object({
-  id: z.string(),
+  id: z.string().min(1),
 });
 
-export async function transcribe(id: string) {
-  "use server";
-  const user = await getUser();
-
-  if (!id || !user.data.user) {
-    return { status: "error", error: "Missing id or user" };
-  }
-
-  try {
-    const cachedData = await redis.get<CachedData>(id);
-    if (cachedData) {
-      console.log("----- CACHED -----");
-      return {
-        ...cachedData,
-        status: "complete",
-        cached: true,
-      };
+export const transcribeAction = authActionClient
+  .schema(transcribeSchema)
+  .metadata({
+    name: "transcribe",
+  })
+  .action(async ({ parsedInput: { id }, ctx }) => {
+    const { user } = ctx;
+    if (!user) {
+      return { status: "error", error: "User not authenticated" };
     }
 
-    const result = await tasks.triggerAndPoll<typeof sequenceFlow>(
-      "sequence-flow",
-      {
+    try {
+      const cachedData = await redis.get<CachedData>(id);
+      if (cachedData)
+        return { status: "cached", id: cachedData.pineconeTaskId };
+
+      const result = await tasks.trigger("sequence-flow", {
         id,
-      },
-    );
+        userId: user.id,
+      });
 
-    if (result.status === "COMPLETED" && result.output) {
-      await redis.set(id, result.output);
-      console.log("----- SAVED -----");
-      const title = result?.output?.videoDetails?.title ?? "Untitled";
-
-      const error = await saveTranscription(id, user?.data?.user?.id, title);
-      if (error) {
-        console.error("Error saving transcription:", error);
-      }
-
+      return { status: "success", result: result };
+    } catch (error) {
+      console.error("Error in transcription process:", error);
       return {
-        ...result.output,
-        status: "complete",
-        cached: false,
+        status: "error",
+        error: "Something went wrong during transcription",
       };
     }
-
-    return {
-      status: "error",
-      error: "Transcription not completed or result is empty",
-    };
-  } catch (error) {
-    console.error("Error in transcription process:", error);
-    return {
-      status: "error",
-      error: "Something went wrong during transcription",
-    };
-  }
-}
+  });
