@@ -34,6 +34,7 @@ export const transcribe = task({
       }
       const format = video.chooseFormat({
         type: "audio",
+        quality: "lowest",
       });
 
       if (!format) {
@@ -42,6 +43,7 @@ export const transcribe = task({
 
       const stream = await yt.download(id, {
         type: "audio",
+        quality: "lowest",
       });
 
       let transcriptionResult: DeepgramResponse<SyncPrerecordedResponse>;
