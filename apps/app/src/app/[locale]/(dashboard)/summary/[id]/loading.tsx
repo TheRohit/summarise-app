@@ -1,5 +1,5 @@
 import { Skeleton } from "@v1/ui/skeleton";
-export const revalidate = 0;
+
 export default function Loading() {
   return (
     <div className=" flex h-full w-full justify-between gap-2">
