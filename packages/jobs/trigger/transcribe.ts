@@ -34,16 +34,16 @@ export const transcribe = task({
       }
       const format = video.chooseFormat({
         type: "audio",
-        quality: "lowest",
       });
 
       if (!format) {
         return { error: "No suitable audio format found" };
       }
 
+      console.log("format quality", format.quality);
+
       const stream = await yt.download(id, {
         type: "audio",
-        quality: "lowest",
       });
 
       let transcriptionResult: DeepgramResponse<SyncPrerecordedResponse>;
