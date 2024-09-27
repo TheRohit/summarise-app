@@ -7,8 +7,7 @@ import {
 } from "../../../../../packages/ui/src/components/card";
 export const Thumbnail = ({ videoInfo }: { videoInfo: VideoInfo }) => {
   const { title, author, viewCount } = videoInfo;
-  const imgSrc =
-    videoInfo?.thumbnails?.[videoInfo?.thumbnails?.length - 1]?.url;
+  const imgSrc = videoInfo?.thumbnails?.[0]?.url;
 
   return (
     <div>
