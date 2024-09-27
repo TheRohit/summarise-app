@@ -1,7 +1,7 @@
 "use client";
 
 import { ProcessResponse } from "@/actions/transcribe/transcribe.types";
-import { JobStatusListener } from "@/app/[locale]/(dashboard)/job/page";
+
 import Loading from "@/app/[locale]/(dashboard)/summary/[id]/loading";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import ChatWindow from "./ChatWindow";
@@ -42,7 +42,7 @@ export default function SummaryContent({
   });
 
   if (summary.status !== "COMPLETED") {
-    return <JobStatusListener jobId={jobId ?? ""} />;
+    return <Loading jobId={jobId ?? ""} />;
   }
   return (
     <div className="flex h-full w-full justify-between gap-2">

@@ -26,19 +26,19 @@ export const sequenceFlow = task({
       await redis.rpush(`job-status:${runId}`, JSON.stringify({ status }));
     };
 
-    await publishStatus("Starting transcription");
+    await publishStatus("transcribing");
     const transcription = await transcribe.triggerAndWait({ id });
     if (transcription.ok && transcription.output.transcription) {
       const videoDetails = transcription.output.videoInfo;
-      await publishStatus("Transcription completed");
+      await publishStatus("transcribed");
 
-      await publishStatus("Generating chapters");
+      await publishStatus("generating");
       const chapters = await generateChaptersTrigger.triggerAndWait({
         input: transcription.output.transcription,
       });
-      await publishStatus("Chapters generated");
+      await publishStatus("generated");
 
-      await publishStatus("Pushing data to Redis");
+      await publishStatus("pushing");
       await pushToRedis.triggerAndWait({
         videoId: id,
         data: {
@@ -46,22 +46,22 @@ export const sequenceFlow = task({
           chapters: chapters.ok ? chapters.output : { chapters: [] },
         },
       });
-      await publishStatus("Data pushed to Redis");
+      await publishStatus("pushed");
 
-      await publishStatus("Creating Pinecone index");
+      await publishStatus("creating");
       await createPineconeIndexTask.trigger({
         transcription: transcription.output.transcription,
         id,
       });
-      await publishStatus("Pinecone index created");
+      await publishStatus("created");
 
-      await publishStatus("Job completed");
+      await publishStatus("completed");
 
       return {
         videoDetails,
         chapters: chapters.ok ? chapters.output : [],
       };
     }
-    await publishStatus("Job failed");
+    await publishStatus("failed");
   },
 });
