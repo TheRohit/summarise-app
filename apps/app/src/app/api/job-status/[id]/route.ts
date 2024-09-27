@@ -38,7 +38,7 @@ export async function GET(
 
             const parsedMessage =
               typeof message === "object" ? message : JSON.parse(messageString);
-            if (parsedMessage.status === "Job completed") {
+            if (parsedMessage.status === "completed") {
               controller.close();
               return;
             }

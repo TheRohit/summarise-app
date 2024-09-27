@@ -15,5 +15,6 @@ export interface ProcessResponse {
     | "INTERRUPTED"
     | "SYSTEM_FAILURE"
     | "DELAYED"
-    | "EXPIRED";
+    | "EXPIRED"
+    | "NOT_FOUND";
 }

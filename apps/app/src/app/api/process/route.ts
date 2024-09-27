@@ -5,11 +5,11 @@ import { SequenceFlowOutput } from "../../../../../../packages/jobs/trigger/sequ
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const id = searchParams.get("jobId");
+  const jobId = searchParams.get("jobId");
   const videoId = searchParams.get("videoId");
 
   try {
-    if (!id || !videoId) {
+    if (!jobId || !videoId) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
     const cachedData = await redis.get<SequenceFlowOutput>(videoId);
@@ -21,7 +21,14 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const run = await runs.retrieve(id);
+    if (jobId === "unknown" && !cachedData) {
+      return NextResponse.json({
+        output: null,
+        status: "NOT_FOUND",
+      });
+    }
+
+    const run = await runs.retrieve(jobId);
     console.log("--- NOT CACHED ---");
     return NextResponse.json({
       output: run.output as SequenceFlowOutput,

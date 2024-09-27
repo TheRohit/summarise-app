@@ -4,6 +4,7 @@ import { ProcessResponse } from "@/actions/transcribe/transcribe.types";
 
 import Loading from "@/app/[locale]/(dashboard)/summary/[id]/loading";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import ChatWindow from "./ChatWindow";
 import InitialContent from "./InitialContent";
 
@@ -23,7 +24,7 @@ export default function SummaryContent({
     queryKey: ["summary", id],
     queryFn: async () => {
       const params = new URLSearchParams({
-        jobId: jobId ?? "cached",
+        jobId: jobId ?? "unknown",
         videoId: id,
       });
 
@@ -40,6 +41,12 @@ export default function SummaryContent({
     staleTime: Number.POSITIVE_INFINITY,
     refetchIntervalInBackground: true,
   });
+
+  const router = useRouter();
+
+  if (summary.status === "NOT_FOUND" && typeof window !== "undefined") {
+    router.push("/");
+  }
 
   if (summary.status !== "COMPLETED") {
     return <Loading jobId={jobId ?? ""} />;
