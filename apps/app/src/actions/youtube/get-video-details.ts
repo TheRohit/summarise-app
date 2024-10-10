@@ -61,6 +61,8 @@ export async function getVideoDetails(
         })) ?? [],
     };
 
+    console.log("ytINFO", videoInfo);
+
     return { success: true, data: videoInfo };
   } catch (error) {
     console.error("Error fetching video details:", error);
