@@ -1,5 +1,5 @@
 import { task } from "@trigger.dev/sdk/v3";
-import { Redis } from "@upstash/redis";
+// import { Redis } from "@upstash/redis";
 import { generateChaptersTrigger } from "./chapters";
 import { createPineconeIndexTask } from "./pinecone";
 import { pushToRedis } from "./redis";
@@ -14,31 +14,31 @@ export interface SequenceFlowOutput {
 export const sequenceFlow = task({
   id: "sequence-flow",
   run: async (payload: { id: string }, { ctx }) => {
-    const redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    });
+    // const redis = new Redis({
+    //   url: process.env.UPSTASH_REDIS_REST_URL,
+    //   token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    // });
     const { id } = payload;
 
     const runId = ctx.run.id;
 
-    const publishStatus = async (status: string) => {
-      await redis.rpush(`job-status:${runId}`, JSON.stringify({ status }));
-    };
+    // const publishStatus = async (status: string) => {
+    //   await redis.rpush(`job-status:${runId}`, JSON.stringify({ status }));
+    // };
 
-    await publishStatus("transcribing");
+    // await publishStatus("transcribing");
     const transcription = await transcribe.triggerAndWait({ id });
     if (transcription.ok && transcription.output.transcription) {
       const videoDetails = transcription.output.videoInfo;
-      await publishStatus("transcribed");
+      // await publishStatus("transcribed");
 
-      await publishStatus("generating");
+      // await publishStatus("generating");
       const chapters = await generateChaptersTrigger.triggerAndWait({
         input: transcription.output.transcription,
       });
-      await publishStatus("generated");
+      // await publishStatus("generated");
 
-      await publishStatus("pushing");
+      // await publishStatus("pushing");
       await pushToRedis.triggerAndWait({
         videoId: id,
         data: {
@@ -46,22 +46,22 @@ export const sequenceFlow = task({
           chapters: chapters.ok ? chapters.output : { chapters: [] },
         },
       });
-      await publishStatus("pushed");
+      // await publishStatus("pushed");
 
-      await publishStatus("creating");
-      await createPineconeIndexTask.trigger({
-        transcription: transcription.output.transcription,
-        id,
-      });
-      await publishStatus("created");
+      // await publishStatus("creating");
+      // await createPineconeIndexTask.trigger({
+      //   transcription: transcription.output.transcription,
+      //   id,
+      // });
+      // await publishStatus("created");
 
-      await publishStatus("completed");
+      // await publishStatus("completed");
 
       return {
         videoDetails,
         chapters: chapters.ok ? chapters.output : [],
       };
     }
-    await publishStatus("failed");
+    // await publishStatus("failed");
   },
 });

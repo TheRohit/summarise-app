@@ -7,3 +7,11 @@ export const LinkValidator = z.object({
 });
 
 export type LinkRequest = z.infer<typeof LinkValidator>;
+
+export const SearchValidator = z.object({
+  query: z.string().min(2, {
+    message: "query must be at least 2 characters.",
+  }),
+});
+
+export type SearchRequest = z.infer<typeof SearchValidator>;

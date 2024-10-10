@@ -79,6 +79,35 @@ export type Database = {
           },
         ];
       };
+      user_video_relationships: {
+        Row: {
+          created_at: string | null;
+          id: string;
+          user_id: string;
+          video_id: string;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string;
+          user_id: string;
+          video_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string;
+          user_id?: string;
+          video_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_video_relationships_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       users: {
         Row: {
           avatar_url: string | null;

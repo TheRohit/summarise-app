@@ -1,10 +1,10 @@
-export const LoadingIcon = () => {
+export const LoadingIcon = ({ size = 20 }: { size?: number }) => {
   return (
     <svg
-      height="20"
+      height={size}
       strokeLinejoin="round"
       viewBox="0 0 16 16"
-      width="20"
+      width={size}
       style={{ color: "currentcolor" }}
     >
       <g clipPath="url(#clip0_2393_1490)">

@@ -38,3 +38,34 @@ export const saveTranscription = async (
 
   return data;
 };
+
+export const updateUserVideoRelationship = async (
+  userId: string,
+  videoId: string,
+) => {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("user_video_relationships")
+      .upsert(
+        {
+          id: uuidv4(),
+          user_id: userId,
+          video_id: videoId,
+          created_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,video_id" },
+      );
+
+    if (error) {
+      logger.error("Error updating user-video relationship:", error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    logger.error("Error in updateUserVideoRelationship:", error);
+    throw error;
+  }
+};
