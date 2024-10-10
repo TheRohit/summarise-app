@@ -36,6 +36,8 @@ export const VideoSearch = () => {
 
   const data = result?.data?.results ?? [];
 
+  console.log(data);
+
   return (
     <div className="w-full space-y-4">
       <Form {...form}>

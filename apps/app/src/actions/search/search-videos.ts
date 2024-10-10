@@ -33,7 +33,7 @@ export const searchVideosAction = authActionClient
         "video-transcriptions",
         query,
       );
-
+      console.log("searchResults", searchResults);
       return { results: searchResults };
     } catch (error) {
       console.error("Error searching videos:", error);
