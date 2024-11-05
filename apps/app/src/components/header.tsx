@@ -24,9 +24,9 @@ export function Header({ className }: HeaderProps) {
         className
       )}
     >
-      <span className="hidden md:block text-sm font-medium">v1.run</span>
+      <span className="hidden md:block text-sm font-medium">Summarise</span>
 
-      <Link href="/">
+      {/* <Link href="/">
         <Image
           src="/logo.png"
           alt="V1 logo"
@@ -35,38 +35,17 @@ export function Header({ className }: HeaderProps) {
           height={60}
           className="md:absolute md:left-1/2 md:top-5 md:-translate-x-1/2"
         />
-      </Link>
+      </Link> */}
 
       <nav className="md:mt-2">
         <ul className="flex items-center gap-4">
           <li>
             <a
-              href="https://github.com/midday-ai/v1"
+              href="https://github.com/TheRohit/summarise-app"
               className="text-sm px-4 py-2 bg-primary text-secondary rounded-full font-medium"
             >
               Github
             </a>
-          </li>
-          <li>
-            <Dialog>
-              <DialogTrigger
-                className="text-sm px-4 py-2 bg-secondary text-primary rounded-full font-medium cursor-pointer"
-                asChild
-              >
-                <span>Get updates</span>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Stay updated</DialogTitle>
-                  <DialogDescription>
-                    Subscribe to our newsletter to get the latest news and
-                    updates.
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="flex flex-col gap-4">...</div>
-              </DialogContent>
-            </Dialog>
           </li>
         </ul>
       </nav>

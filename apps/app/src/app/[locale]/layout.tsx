@@ -9,8 +9,8 @@ import { ThemeProvider } from "next-themes";
 import Providers from "../providers";
 
 export const metadata: Metadata = {
-  title: "Create v1",
-  description: "Production ready Next.js app",
+  title: "Summarise",
+  description: "Summarise your videos",
 };
 
 export const viewport = {

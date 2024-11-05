@@ -1,4 +1,8 @@
+import { Blur } from "@/components/Blur";
+import Home from "@/components/Home";
 import { GoogleSignin } from "@/components/google-signin";
+import Meteors from "@/components/meteors";
+import Particles from "@/components/particles";
 import Image from "next/image";
 
 export const metadata = {
@@ -7,11 +11,17 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center">
-      <div className="flex flex-col items-center justify-center size-96">
-        <Image src="/logo.png" alt="logo" width={350} height={350} />
-        <GoogleSignin />
-      </div>
+    <div className="flex flex-col items-center justify-center overflow-hidden">
+      <Blur />
+      {/* <Meteors number={30} /> */}
+      <Particles
+        className="absolute inset-0 -z-50"
+        quantity={50}
+        ease={80}
+        color={"#ffffff"}
+        refresh
+      />
+      <Home />
     </div>
   );
 }
